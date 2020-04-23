@@ -1,0 +1,325 @@
+paths:
+  /addeditCompany:
+    post:
+      tags:
+        - companies
+      security:
+        - bearerAuth: []
+      summary: add or edit a company
+      operationId: addeditCompany
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                basicData:
+                  type: string
+                  description: stringified json object
+                  example: '{"companyId":23,"company_number":"1","name1":"string","name2":"string","num_invoice":"23","ag_ltp_number":"string","fax":"string","group_name":"string","invoice_number":"string","num_r_branch":0,"phone1":"string","phone2":"string","postcode":"string","prefix_client":"string","prefix_power_partner":"string","street":"string","ustr_mandatory":"string","ustr_mandatory_value":"string","code":"string","country_name":"string","last_set_position":"string","last_rech_date":"2019-12-12"}'
+                logo:
+                  type: string
+                  format: binary
+                  description: logo file
+                bankingData:
+                  type: string
+                  description: stringified json object
+                  example: '{"account":"string","bankId":3,"converter": "string","dtaus_no": "string","dtaus_path": "string","iban": "string","bic":"string","sepa": "string","sepa_no": "string","sepa_path": "string","usage": "string"}'
+                invoiceData:
+                  type: string
+                  description: stringified json object
+                  example: '{"commercial_register": "string","executive_director": "string","logo_position":0,"tax_number": "string","ust_id": "string","website": "string", "commercial_register_number":1,"complementary":"string","hra":"string"}'
+      responses:
+        '200':
+          description: fetching success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  message:
+                    type: string
+                    example: ompany has been inserted successfully.
+  /companiesList:
+    post:
+      tags:
+        - companies
+      summary: companies list
+      security:
+        - bearerAuth: []
+      operationId: companiesList
+      description: get the list of the companies.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestBodySchema'
+      responses:
+        '200':
+          description: fetching success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        ag_ltp_number:
+                          type: string
+                        companyId:
+                          type: integer
+                        company_number:
+                          type: integer
+                        fax:
+                          type: string
+                        group_name:
+                          type: string
+                        invoice_number:
+                          type: integer
+                        last_rech_date:
+                          type: string
+                        last_set_position:
+                          type: integer
+                        name1:
+                          type: string
+                        name2:
+                          type: string
+                        num_invoice:
+                          type: integer
+                        num_r_branch:
+                          type: integer
+                        phone1:
+                          type: string
+                        phone2:
+                          type: string
+                        postcode:
+                          type: string
+                        prefix_client:
+                          type: string
+                        prefix_power_partner:
+                          type: string
+                        status:
+                          type: integer
+                        street:
+                          type: string
+                        ustr_mandatory:
+                          type: integer
+                        ustr_mandatory_value:
+                          type: string
+                        code:
+                          type: string
+                        country_name:
+                          type: string
+                        created_time:
+                          type: string
+                        updated_time:
+                          type: string
+                  draw:
+                    type: integer
+                  recordsFiltered:
+                    type: integer
+                  recordsTotal:
+                    type: integer
+
+  /getCompanyDetails:
+    get:
+      tags:
+        - companies
+      summary: company detail
+      operationId: getCompanyDetails
+      parameters:
+        - in: query
+          name: companyId
+          required: true
+          schema:
+            type: integer
+            example: 9
+      responses:
+        '200':
+          description: basicData, bankingData, invoiceData
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      basicData:
+                        type: object
+                        properties:
+                          ag_ltp_number:
+                            type: string
+                          companyId:
+                            type: integer
+                          company_number:
+                            type: integer
+                          fax:
+                            type: string
+                          group_name:
+                            type: string
+                          invoice_number:
+                            type: integer
+                          last_rech_date:
+                            type: string
+                          last_set_position:
+                            type: integer
+                          name1:
+                            type: string
+                          name2:
+                            type: string
+                          num_invoice:
+                            type: integer
+                          num_r_branch:
+                            type: integer
+                          phone1:
+                            type: string
+                          phone2:
+                            type: string
+                          postcode:
+                            type: string
+                          prefix_client:
+                            type: string
+                          prefix_power_partner:
+                            type: string
+                          status:
+                            type: integer
+                          street:
+                            type: string
+                          ustr_mandatory:
+                            type: integer
+                          ustr_mandatory_value:
+                            type: string
+                          code:
+                            type: string
+                          created_time:
+                            type: string
+                          updated_time:
+                            type: string
+                      bankingData:
+                        type: object
+                        properties:
+                          companyId:
+                            type: integer
+                          account:
+                            type: string
+                          bankId:
+                            type: integer
+                          converter:
+                            type: string
+                          dtaus_no:
+                            type: string
+                          dtaus_path:
+                            type: string
+                          iban:
+                            type: string
+                          sepa:
+                            type: string
+                          sepa_no:
+                            type: string
+                          sepa_path:
+                            type: string
+                          usage:
+                            type: string
+                          bank_name:
+                            type: string
+                      invoiceData:
+                        type: object
+                        properties:
+                          companyId:
+                            type: integer
+                          commercial_register:
+                            type: string
+                          commercial_register_number:
+                            type: string
+                          complementary:
+                            type: string
+                          hra:
+                            type: string
+                          executive_director:
+                            type: string
+                          logo_file:
+                            type: string
+                          logo_position:
+                            type: integer
+                          tax_number:
+                            type: string
+                          ust_id:
+                            type: string
+                          website:
+                            type: string
+components:
+  schemas:
+    RequestBodySchema:
+      type: object
+      properties:
+        start:
+          type: integer
+          description: start position in the list to search
+          example: 0
+        length:
+            type: integer
+            description: number of the items to fetch per request
+            example: 10
+        draw:
+          type: integer
+          example: 1
+        search:
+          type: object
+          description: keyword for search
+          properties:
+            value:
+              type: string
+              example: ""
+            regex:
+              type: string
+              example: false
+        order:
+          type: array
+          items:
+            type: object
+            properties:
+              column:
+                type: integer
+                example: 1
+              dir:
+                type: string
+                example: "asc"
+        columns:
+          type: array
+          items:
+            type: object
+            properties:
+              data:
+                type: integer
+              name:
+                type: string
+              searchable:
+                type: string
+                example: "true"
+              orderable:
+                type: string
+                example: "true"
+              search:
+                type: object
+                properties:
+                  value:
+                    type: string
+                  regex:
+                    type: string
+                    example: "true"
+  securitySchemes:
+    bearerAuth:            # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT    # optional, arbitrary value for documentation purposesD

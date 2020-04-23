@@ -1,0 +1,645 @@
+paths:
+  /orderList:
+    post:
+      tags:
+        - orders
+      summary: get the list of the orders
+      operationId: /orderList
+      description: get the list of the orders
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: type
+          description: order's type(special, normal, all)
+          schema:
+            type: string
+            example: normal
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - start
+                - length
+              properties:
+                start:
+                  type: integer
+                  description: start position of the row of the orders table to fetch
+                  example: 0
+                length:
+                    type: integer
+                    description: number of the orders to fetch per request
+                    example: 10
+                draw:
+                  type: integer
+                  example: 1
+                search:
+                  type: object
+                  description: keyword for search
+                  properties:
+                    value:
+                      type: string
+                      example: ""
+                    regex:
+                      type: string
+                      example: false
+                order:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      column:
+                        type: integer
+                        example: 1
+                      dir:
+                        type: string
+                        example: "asc"
+                columns:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      data:
+                        type: integer
+                      name:
+                        type: string
+                      searchable:
+                        type: string
+                        example: "true"
+                      orderable:
+                        type: string
+                        example: "true"
+                      search:
+                        type: object
+                        properties:
+                          value:
+                            type: string
+                          regex:
+                            type: string
+                            example: "true"
+                status:
+                  type: integer
+                  description: get inactivated orders when status=0, if status = 1 get activated orders, if not set status, then get all orders
+                  example: 1
+      responses:
+        '200':
+          description: fetching success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        orderId:
+                          type: integer
+                        order_number:
+                          type: integer
+                        clientId:
+                        client_number:
+                          type: string
+                        client_name:
+                          type: string
+                        company_name:
+                          type: string
+                          description: client's company name
+                        contractorId:
+                          type: integer
+                        contractor_number:
+                          type: string
+                        contractor_name:
+                          type: string
+                        client_price:
+                          type: number
+                          format: float
+                          example: 23.34
+                        client_price_week:
+                          type: number
+                        client_price_weekend:
+                          type: number
+                        contractor_price:
+                          type: number
+                          format: float
+                          example: 23
+                        contractor_price_week:
+                          type: number
+                        contractor_price_weekend:
+                          type: number
+                        description:
+                          type: string
+                        client_city:
+                          type: string
+                        special_type:
+                          type: boolean
+                        status:
+                          type: boolean
+                        created_time:
+                          type: string
+                        updated_time:
+                          type: string
+                        manager:
+                          type: integer
+                        manager_name:
+                          type: string
+                        manager_phone:
+                          type: string
+                        price_basis:
+                          type: string
+                        day:
+                          type: string
+                        account_managers:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              name:
+                                type: string
+                              phone:
+                                type: string
+                  draw:
+                    type: integer
+                  recordsFiltered:
+                    type: integer
+                  recordsTotal:
+                    type: integer
+
+  /getOpenPositionList:
+    post:
+      tags:
+        - orders
+      summary: get the list of the open positions
+      operationId: /getOpenPositionList
+      description: get the list of the orders unprocessed
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                offset:
+                  type: integer
+                  description: start position of the row of the orders table to fetch
+                  example: 0
+                limit:
+                    type: integer
+                    description: number of the orders to fetch per request
+                    example: 10
+                search:
+                  type: string
+                  description: keyword for search
+                orderby:
+                  type: string
+                  description: orderby from responses
+                  example: contractor_name
+                dir:
+                  type: string
+                  example: DESC | ASC
+      responses:
+        '200':
+          description: fetching success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        orderId:
+                          type: integer
+                          description: this is the primary keyword
+                        order_number:
+                          type: string
+                        description:
+                          type: string
+                          description: description of the orders
+                        clientId:
+                          type: integer
+                        client_number:
+                          type: string
+                        client_name:
+                          type: string
+                        contractorId:
+                          type: integer
+                        contractor_number:
+                          type: string
+                        contractor_name:
+                          type: string
+                        client_price_week:
+                          type: number
+                          format: float
+                          example: 23.34
+                        contractor_price_week:
+                          type: number
+                          format: float
+                          example: 23
+                        special_type:
+                          type: boolean
+                          description: if special_type is true, the order is special
+                  recordsTotal:
+                    type: integer
+                    description: count of the all open positions
+                  recordsFiltered:
+                    type: integer
+                    description: count of the filtered open positions
+  /addeditOrder:
+    post:
+      tags:
+        - orders
+      summary: add or edit an order
+      operationId: /addeditOrder
+      description: add or edit an order
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: type
+          description: order's type(special, normal)
+          schema:
+            type: string
+            example: normal
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                orderId:
+                  type: integer
+                order_number:
+                  type: integer
+                description:
+                  type: string
+                clientId:
+                  type: integer
+                client_price:
+                  type: number
+                  format: float
+                client_date_of_expiry:
+                  type: string
+                  format: date
+                client_valid_from:
+                  type: string 
+                  format: date
+                client_price_week:
+                  type: number
+                  format: float
+                client_price_weekend:
+                  type: number
+                  format: float
+                price_basis:
+                  type: string
+                day:
+                  type: array
+                  description: array of days, 0 is equal to monday
+                  items:
+                      type: integer
+                      example: 1
+                  example: [1,2,3]
+                valid_from:
+                  type: string
+                  format: date
+                date_of_expiry:
+                  type: string
+                  format: date
+                order_type:
+                  type: integer
+                contractorId:
+                  type: integer
+                contractor_price_week:
+                  type: number
+                  format: float
+                contractor_date_of_expiry:
+                  type: string
+                  format: date
+                contractor_price_weekend:
+                  type: number
+                  format: float
+                contractor_valid_from:
+                  type: string
+                  format: date
+                comment:
+                  type: string
+                fuel_fee:
+                  type: boolean
+                vehicle_size:
+                  type: string
+                number_of_departures:
+                  type: integer
+                departure_times:
+                  type: string
+                driver_name:
+                  type: string
+                phone:
+                  type: string
+                tourcode:
+                  type: string
+                password:
+                  type: string
+                status:
+                  type: boolean
+                once_per_billing:
+                  type: boolean
+                no_customer_invoice:
+                  type: boolean
+                manager:
+                  type: integer
+                personId:
+                  type: integer
+                billed_company:
+                  type: string
+      responses:
+        '200':
+          description: operation success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  message:
+                    type: string
+                    example: Order has been updated successfully.
+                  newOrderId:
+                    type: integer
+  /getOrderDetails:
+    get:
+      tags:
+        - orders
+      summary: get order details
+      operationId: /getOrderDetails
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: orderId
+          description: orderId
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: operation success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  orderId:
+                    type: integer
+                  order_number:
+                    type: integer
+                  description:
+                    type: string
+                  clientId:
+                    type: integer
+                  client_price:
+                    type: number
+                    format: float
+                  date_of_expiry:
+                    type: string
+                    format: date
+                  valid_from:
+                    type: string
+                    format: date
+                  client_name:
+                    type: string
+                  client_price_week:
+                    type: number
+                    format: float
+                  client_date_of_expiry:
+                    type: string
+                    format: date
+                  client_price_weekend:
+                    type: number
+                    format: float
+                  client_valid_from:
+                    type: string
+                    format: date
+                  company_name:
+                    type: string
+                  price_basis:
+                    type: string
+                  day:
+                    type: string
+                    description: string seperated with comma
+                    example: '1,2,3'
+                  order_type:
+                    type: string
+                  contractorId:
+                    type: integer
+                  contractor_name:
+                    type: string
+                  contractor_price_week:
+                    type: number
+                    format: float
+                  contractor_date_of_expiry:
+                    type: string
+                    format: date
+                  contractor_price_weekend:
+                    type: number
+                    format: float
+                  contractor_valid_from:
+                    type: string
+                    format: date
+                  comment:
+                    type: string
+                  fuel_fee:
+                    type: boolean
+                  vehicle_size:
+                    type: string
+                  number_of_departures:
+                    type: integer
+                  departure_times:
+                    type: string
+                  driver_name:
+                    type: string
+                  phone:
+                    type: string
+                  tourcode:
+                    type: string
+                  password:
+                    type: string
+                  status:
+                    type: boolean
+                  once_per_billing:
+                    type: boolean
+                  no_customer_invoice:
+                    type: boolean
+                  special_type:
+                    type: boolean
+                  created_time:
+                    type: string
+                  updated_time:
+                    type: string
+                  manager:
+                    type: integer
+                  manager_name:
+                    type: string
+                  manager_phone:
+                    type: string
+                  account_managers:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        name:
+                          type: string
+                        phone:
+                          type: string
+                  personId:
+                    type: integer
+                  person_first_name:
+                    type: string
+                  person_surname:
+                    type: string
+                  billed_company:
+                    type: string
+
+  /savePriceHistory:
+    post:
+      tags:
+        - orders
+      summary: get history of the client price
+      security:
+        - bearerAuth: []      
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                orderId:
+                  type: integer
+                clientId:
+                  type: integer
+                priceType:
+                  type: string
+                  description: client_price, client_price_week, client_price_weekend, contractor_price, contractor_price_week contractor_price_weekend
+                  example: client_price
+                insert:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      price:
+                        type: number
+                        format: float
+                      date_of_expiry:
+                        type: string
+                        format: date
+                      valid_from:
+                        type: string
+                        format: date
+                update:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      price:
+                        type: number
+                        format: float
+                      date_of_expiry:
+                        type: string
+                        format: date
+                      valid_from:
+                        type: string
+                        format: date
+                deletedIds:
+                  type: array
+                  items:
+                    type: integer
+      responses:
+        '200':
+          description: client price history
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  message:
+                    type: string
+
+  /getPriceHistory:
+    get:
+      tags:
+        - orders
+      summary: get history of the client price
+      parameters:
+        - in: query
+          name: orderId
+          schema:
+            type: integer
+        - in: query
+          name: entityId
+          description: clientId or contractorId, when priceType is client_price, client_price_week, or client_price_weekend, entityId is clientId
+          schema:
+            type: integer
+        - in: query
+          name: priceType
+          schema:
+            type: string
+            description: client_price, client_price_week, client_price_weekend, contractor_price, contractor_price_week, contractor_price_weekend
+            example: client_price
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: client price history
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        orderId:
+                          type: integer
+                        entityId:
+                          type: integer
+                        price:
+                          type: number
+                          format: float
+                        valid_from:
+                          type: string
+                          format: date
+                        date_of_expiry:
+                          type: string
+                          format: date                   
+                        priceType:
+                          type: string
+
+components:
+  securitySchemes:
+    bearerAuth:            # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT    # optional, arbitrary value for documentation purposesD
+security:
+  - bearerAuth: []

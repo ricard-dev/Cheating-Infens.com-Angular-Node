@@ -1,0 +1,869 @@
+paths:
+  /addeditClient:
+    post:
+      tags:
+        - clients
+      summary: add or update new client
+      operationId: addeditClient
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - basicData
+              properties:
+                contractFiles:
+                  type: string
+                  format: binary
+                  description: contract file
+                basicData:
+                  type: string
+                  description: |
+                    JSON string, form data stringified
+                  example: '{"clientId":23,"client_number":"23","name1":"Alexander","name2":"Alex","street":"south east","zipcode":"1992","city":"New York","state":"","country":"United State","phone1":"1578459978","phone2":"","mobile":"","alternative_invoice_recipient":null,"fax":"","email":"test@test.com","rech_rhythm":"","zahl_rhythm":"","contract_file":"","contract_start_date":"","contract_end_date":"","termination_time":"","termination_time_value":"","billed":"","tax_identification_number":"","bank":"","iban":"","bic":"","national_tax_number":"455","ustr_mandatory":"","ustr_mandatory_value":"","currency":"USD","vendor_number":"22","print_branch_invoice":"true","account_managers":[{"name":"manager1","phone":"+492344222"}],"cost_center":"blabla","last_billed":"2019-11-11","debitor_no":21,"location":{"lat":51.678,"lng":7.809,"marker":{"lat":51.678,"lng":7.809,"draggable":true},"zoom": 6,"address": "client address"}}'
+                personList:
+                  type: string
+                  example: "[]"
+                  description: |
+                    stringified array
+                deleteClientPersons:
+                  type: string
+                  example: "[]"
+                  description: |
+                    stringified array
+                comment:
+                  type: string
+                orderDataList:
+                  type: string
+                  example: "[]"
+                  description: |
+                    stringified array
+                deleteClientOrders:
+                  type: string
+                  example: "[]"
+                  description: |
+                    stringified array
+                priceHistory:
+                  type: string
+                  example: '[{"orderId":1,"priceType":"client_price", "price":34.22, "valid_from":"2019-12-01", "date_of_expiry": "2020-12-01"}]'
+      responses:
+        "200":
+          description: adding or updating a client was success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
+                  message:
+                    type: string
+                  newClientId:
+                    type: integer
+                  fileName:
+                    type: string
+                  uploadedFile:
+                    type: string
+                    description: url of the file in aws s3 bucket
+                    example: https://logistic-uploads.s3.amazonaws.com/232.pdf
+  /clientsList:
+    post:
+      tags:
+        - clients
+      summary: get the list of the clients
+      operationId: clientsList
+      security:
+        - bearerAuth: []
+      description: get the list of the clients
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RequestBodySchema"
+      responses:
+        "200":
+          description: fetching success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        clientId:
+                          type: integer
+                        client_number:
+                          type: string
+                        name1:
+                          type: string
+                        name2:
+                          type: string
+                        street:
+                          type: string
+                        zipcode:
+                          type: string
+                        city:
+                          type: string
+                        bank:
+                          type: string
+                        bic:
+                          type: string
+                        billed:
+                          type: string
+                        comment:
+                          type: string
+                        contract_end_date:
+                          type: string
+                        contract_file:
+                          type: string
+                        contract_start_date:
+                          type: string
+                        created_time:
+                          type: string
+                        currency:
+                          type: string
+                        email:
+                          type: string
+                        fax:
+                          type: string
+                        iban:
+                          type: string
+                        mobile:
+                          type: string
+                        national_tax_number:
+                          type: string
+                        phone1:
+                          type: string
+                        phone2:
+                          type: string
+                        rech_rhythm:
+                          type: string
+                        state:
+                          type: string
+                        status:
+                          type: integer
+                        tax_identification_number:
+                          type: string
+                        termination_time:
+                          type: string
+                        termination_time_value:
+                          type: string
+                        updated_time:
+                          type: string
+                        ustr_mandatory:
+                          type: string
+                        ustr_mandatory_value:
+                          type: string
+                        vendor_number:
+                          type: string
+                        zahl_rhythm:
+                          type: string
+                        print_branch_invoice:
+                          type: boolean
+                        cost_center:
+                          type: string
+                        last_billed:
+                          type: string
+                        alternative_invoice_recipient:
+                          type: integer
+                        debitor_no:
+                          type: integer
+                        account_managers:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                              name:
+                                type: string
+                              phone:
+                                type: string
+                        location: 
+                          type: object
+                          properties:
+                            lat:
+                              type: number
+                              format: float
+                            lng:
+                              type: number
+                              format: float
+                            marker:
+                              type: object
+                              properties:
+                                lat:
+                                  type: number
+                                  format: float
+                                lng:
+                                  type: number
+                                  format: float
+                                draggable:
+                                  type: boolean
+                            zoom:
+                              type: number
+                              format: float
+                            address:
+                              type: string
+                  draw:
+                    type: integer
+                  recordsFiltered:
+                    type: integer
+                  recordsTotal:
+                    type: integer
+  /getNewClientNo:
+    get:
+      tags:
+        - clients
+      summary: Get available Number for new client
+      operationId: getNewClientNo
+      responses:
+        "200":
+          description: Got new Number
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  newclientId:
+                    type: integer
+                    example: 24
+  /deleteClient:
+    delete:
+      tags:
+        - clients
+      summary: delete a client and his basicData
+      operationId: deleteClient
+      parameters:
+        - in: query
+          name: clientId
+          schema:
+            type: integer
+            example: 12
+      responses:
+        "200":
+          description: operation successed without errors
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  data:
+                    type: object
+                    properties:
+                      affectedRows:
+                        type: integer
+                        example: 0
+                      message:
+                        type: string
+                        example: operation successfully completed
+  /getClientDetails:
+    get:
+      tags:
+        - clients
+      summary: get clients and his orders, special orders and contact persons
+      operationId: getClientDetails
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: clientId
+          description: client id
+          schema:
+            type: integer
+          required: true
+      responses:
+        "200":
+          description: operation success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      basicData:
+                        $ref: "#/components/schemas/Client"
+                      personIdsList:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/ClientsContactPerson"
+                      tourList:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/ClientsOrder"
+                      specialtourData:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/ClientsSpecialOrder"
+  /clientPersonList:
+    post:
+      tags:
+        - clients
+      summary: get the list of a client's persons
+      operationId: clientPersonList
+      description: clients persons
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RequestBodyPersonSchema"
+      responses:
+        "200":
+          description: client's person list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
+                  recordsTotal:
+                    type: integer
+                  recordsFiltered:
+                    type: integer
+                  draw:
+                    type: integer
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ClientsPerson"
+  /clientOrderList:
+    post:
+      tags:
+        - clients
+      summary: get the list of a client's order
+      operationId: clientOrderList
+      description: clients orders
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: type
+          description: set order's type, (all, special, normal)
+          schema:
+            type: string
+            example: special
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RequestBodyOrderSchema"
+      responses:
+        "200":
+          description: client's order list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
+                  recordsTotal:
+                    type: integer
+                  recordsFiltered:
+                    type: integer
+                  draw:
+                    type: integer
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ClientsListOrder"
+  /getPriceList:
+    get:
+      tags:
+        - clients
+      summary: get price list
+      parameters:
+        - in: query
+          name: clientId
+          required: true
+          schema:
+            type: integer
+            example: 21
+      responses:
+        "200":
+          description: price list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    client_price:
+                      type: number
+                      format: float
+                    valid_from:
+                      type: string
+                    date_of_expiry:
+                      type: string
+components:
+  schemas:
+    Client:
+      type: object
+      properties:
+        clientId:
+          type: integer
+        client_number:
+          type: string
+        name1:
+          type: string
+        name2:
+          type: string
+        street:
+          type: string
+        zipcode:
+          type: string
+        city:
+          type: string
+        bank:
+          type: string
+        bic:
+          type: string
+        billed:
+          type: string
+        comment:
+          type: string
+        contract_end_date:
+          type: string
+        contract_file:
+          type: string
+        contract_start_date:
+          type: string
+        created_time:
+          type: string
+        currency:
+          type: string
+        email:
+          type: string
+        fax:
+          type: string
+        iban:
+          type: string
+        mobile:
+          type: string
+        national_tax_number:
+          type: string
+        phone1:
+          type: string
+        phone2:
+          type: string
+        rech_rhythm:
+          type: string
+        state:
+          type: string
+        status:
+          type: integer
+        tax_identification_number:
+          type: string
+        termination_time:
+          type: string
+        termination_time_value:
+          type: string
+        updated_time:
+          type: string
+        ustr_mandatory:
+          type: string
+        ustr_mandatory_value:
+          type: string
+        vendor_number:
+          type: string
+        zahl_rhythm:
+          type: string
+        print_branch_invoice:
+          type: boolean
+        account_managers:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              phone:
+                type: string
+        cost_center:
+          type: string
+        last_billed:
+          type: string
+        alternative_invoice_recipient:
+          type: int
+        company_code:
+          type: string
+        alternative_invoice_recipient_name:
+          type: string
+        debitor_no:
+          type: integer
+        location:
+          type: object
+          properties:
+            lat:
+              type: number
+              format: float
+            lng:
+              type: number
+              format: float
+            marker:
+              type: object
+              properties:
+                lat:
+                  type: number
+                  format: float
+                lng:
+                  type: number
+                  format: float
+                draggable:
+                  type: boolean
+            zoom:
+              type: number
+              format: float
+            address:
+              type: string
+
+    ClientsContactPerson:
+      type: object
+      properties:
+        clients_contact_personId:
+          type: integer
+        clientId:
+          type: integer
+        personId:
+          type: integer
+        added_date:
+          type: string
+        status:
+          type: integer
+    ClientsOrder:
+      type: object
+      properties:
+        clients_orderId:
+          type: integer
+        clientId:
+          type: integer
+        orderId:
+          type: integer
+        added_date:
+          type: string
+        status:
+          type: integer
+    ClientsSpecialOrder:
+      type: object
+      properties:
+        clients_special_tourId:
+          type: integer
+        clientId:
+          type: integer
+        description:
+          type: string
+        day:
+          type: string
+        client_price:
+          type: number
+          format: float
+        contractors_price:
+          type: number
+          format: float1
+        contractors:
+          type: string
+    ClientsPerson:
+      type: object
+      properties:
+        clients_contact_personId:
+          type: integer
+        clientId:
+          type: integer
+        added_date:
+          type: string
+        personId:
+          type: integer
+        person_number:
+          type: string
+        salutation:
+          type: string
+        first_name:
+          type: string
+        surname:
+          type: string
+        department:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+
+    ClientsListOrder:
+      type: object
+      properties:
+        orderId:
+          type: integer
+        order_number:
+          type: integer
+        description:
+          type: string
+        client_price:
+          type: number
+        client_price_week:
+          type: number
+        client_price_weekend:
+          type: number
+        contractor_price:
+          type: number
+        contractor_price_week:
+          type: number
+        contractor_price_weekend:
+          type: number
+        clientId:
+          type: integer
+        client_number:
+          type: integer
+        client_city:
+          type: string
+        contractorId:
+          type: integer
+        contractor_number:
+          type: integer
+        contreactor_name:
+          type: string
+        contractor_city:
+          type: string
+        clients_orderId:
+          type: integer
+        account_managers:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              phone:
+                type: string
+    RequestBodySchema:
+      type: object
+      properties:
+        start:
+          type: integer
+          description: start position in the list to search
+          example: 1
+        length:
+          type: integer
+          description: number of the items to fetch per request
+          example: 10
+        draw:
+          type: integer
+          example: 1
+        search:
+          type: object
+          description: keyword for search
+          properties:
+            value:
+              type: string
+              example: ""
+            regex:
+              type: string
+              example: false
+        order:
+          type: array
+          items:
+            type: object
+            properties:
+              column:
+                type: integer
+                example: 1
+              dir:
+                type: string
+                example: "asc"
+        columns:
+          type: array
+          items:
+            type: object
+            properties:
+              data:
+                type: integer
+              name:
+                type: string
+              searchable:
+                type: string
+                example: "true"
+              orderable:
+                type: string
+                example: "true"
+              search:
+                type: object
+                properties:
+                  value:
+                    type: string
+                  regex:
+                    type: string
+                    example: "true"
+        status:
+          type: integer
+          description: get inactivated items when status=0, if status = 1 get activated items, if not set status, then get all items
+          example: 1    
+    RequestBodyPersonSchema:
+      type: object
+      properties:
+        start:
+          type: integer
+          description: start position of the row of clients table to fetch
+          example: 1
+        length:
+          type: integer
+          description: number of the clients to fetch per request
+          example: 10
+        draw:
+          type: integer
+          example: 1
+        search:
+          type: object
+          description: keyword for search
+          properties:
+            value:
+              type: string
+              example: ""
+            regex:
+              type: string
+              example: false
+            clientId:
+              type: integer
+              example: 1
+            deletedPersonIds:
+              type: array
+              items:
+                type: integer
+            newPersonIds:
+              type: array
+              items:
+                type: integer
+        order:
+          type: array
+          items:
+            type: object
+            properties:
+              column:
+                type: integer
+                example: 1
+              dir:
+                type: string
+                example: "asc"
+        columns:
+          type: array
+          items:
+            type: object
+            properties:
+              data:
+                type: integer
+              name:
+                type: string
+              searchable:
+                type: string
+                example: "true"
+              orderable:
+                type: string
+                example: "true"
+              search:
+                type: object
+                properties:
+                  value:
+                    type: string
+                  regex:
+                    type: string
+                    example: "true"
+    RequestBodyOrderSchema:
+      type: object
+      properties:
+        start:
+          type: integer
+          description: start position of the row of orders table to fetch
+          example: 1
+        length:
+          type: integer
+          description: number of the clients orders to fetch per request
+          example: 10
+        draw:
+          type: integer
+          example: 1
+        search:
+          type: object
+          description: keyword for search
+          properties:
+            value:
+              type: string
+              example: ""
+            regex:
+              type: string
+              example: false
+            clientId:
+              type: integer
+              example: 1
+            deletedOrderIds:
+              type: array
+              items:
+                type: integer
+            newOrderIds:
+              type: array
+              items:
+                type: integer
+        order:
+          type: array
+          items:
+            type: object
+            properties:
+              column:
+                type: integer
+                example: 1
+              dir:
+                type: string
+                example: "asc"
+        columns:
+          type: array
+          items:
+            type: object
+            properties:
+              data:
+                type: integer
+              name:
+                type: string
+              searchable:
+                type: string
+                example: "true"
+              orderable:
+                type: string
+                example: "true"
+              search:
+                type: object
+                properties:
+                  value:
+                    type: string
+                  regex:
+                    type: string
+                    example: "true"
+        status:
+          type: integer
+          description: get inactivated orders when status=0,if status = 1,  get activated orders, if not set status, then get all orders
+          example: 1
+  securitySchemes:
+    bearerAuth:            # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT    # optional, arbitrary value for documentation purposesD
+security:
+  - bearerAuth: []

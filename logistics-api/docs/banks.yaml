@@ -1,0 +1,326 @@
+paths:
+  /banksList:
+    post:
+      tags:
+        - banks
+      summary: get all banks
+      operationId: banksList
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                start:
+                  type: integer
+                  description: start position in the list to search
+                  example: 1
+                length:
+                  type: integer
+                  description: number of the items to fetch per request
+                  example: 10
+                draw:
+                  type: integer
+                  example: 1
+                search:
+                  type: object
+                  description: keyword for search
+                  properties:
+                    value:
+                      type: string
+                      example: ""
+                    regex:
+                      type: string
+                      example: false
+                order:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      column:
+                        type: integer
+                        example: 1
+                      dir:
+                        type: string
+                        example: "asc"
+                columns:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      data:
+                        type: integer
+                      name:
+                        type: string
+                      searchable:
+                        type: string
+                        example: "true"
+                      orderable:
+                        type: string
+                        example: "true"
+                      search:
+                        type: object
+                        properties:
+                          value:
+                            type: string
+                          regex:
+                            type: string
+                            example: "true"
+                status:
+                  type: integer
+                  description: get inactivated items when status=0, if status = 1 get activated items, if not set status, then get all items
+                  example: 1
+      responses:
+        '200':
+          description: operation success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    bankId:
+                      type: integer
+                    bank_number:
+                      type: integer
+                    name:
+                      type: string
+                    account_number:
+                      type: integer
+                      format: int64
+                    bank_code:
+                      type: integer
+                    iban:
+                      type: string
+                    bic:
+                      type: string
+                    companyId:
+                      type: integer
+                    company_code:
+                      type: string
+
+  /banks:
+    post:
+      tags:
+        - banks
+      summary: add new bank
+      operationId: newBank
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                bank_number:
+                  type: integer
+                  example: 1
+                name:
+                  type: string
+                  example: Comerzbank
+                account_number:
+                  type: integer
+                  format: int64
+                  example: 2342411
+                bank_code:
+                  type: integer
+                  example: 234234
+                iban:
+                  type: string
+                  example: AS3L3223412AKSDF
+                bic:
+                  type: string
+                  example: Q3423J42K3SL
+                companyId:
+                  type: integer
+      responses:
+        '201':
+          description: operation success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  message:
+                    type: string
+                    example: Bank has been inserted
+                  bankId:
+                    type: integer
+
+  /banks/{bankId}:
+    patch:
+      tags:
+        - banks
+      summary: update an exist bank
+      operationId: updateBank
+      parameters:
+        - in: path
+          name: bankId
+          description: bank id
+          schema:
+            type: integer
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                bank_number:
+                  type: integer
+                  example: 1
+                name:
+                  type: string
+                  example: Comerzbank
+                account_number:
+                  type: integer
+                  format: int64
+                  example: 2342411
+                bank_code:
+                  type: integer
+                  example: 234234
+                iban:
+                  type: string
+                  example: AS3L3223412AKSDF
+                bic:
+                  type: string
+                  example: Q3423J42K3SL
+                companyId:
+                  type: integer
+      responses:
+        '200':
+          description: operation success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Bank has been updated
+        '404':
+          description: item not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: The item does not exist
+    delete:
+      tags:
+        - banks
+      summary: delete a bank
+      operationId: deleteBank
+      parameters:
+        - in: path
+          name: bankId
+          description: bank id
+          schema:
+            type: integer
+          required: true
+
+      responses:
+        '200':
+          description: operation success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
+                  message:
+                    type: string 
+        '404':
+          description: item does not exist
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: The bank does not exist
+    get:
+      tags:
+        - banks
+      summary: get a bank by bankId
+      operationId: getBank
+      parameters:
+        - in: path
+          name: bankId
+          description: bank id
+          schema:
+            type: integer
+          required: true
+
+      responses:
+        '200':
+          description: operation success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  bankId:
+                    type: integer
+                  bank_number:
+                    type: integer
+                  name:
+                    type: string
+                  account_number:
+                    type: integer
+                    format: int64
+                  bank_code:
+                    type: integer
+                  iban:
+                    type: string
+                  bic:
+                    type: string
+                  companyId:
+                    type: integer
+        '404':
+          description: item does not exist
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: The bank does not exist
+  /getNewBankId:
+    get:
+      tags:
+        - banks
+      description: get possible new bankId
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: new bankId
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  newBankId:
+                    type: integer
+components:
+  securitySchemes:
+    bearerAuth:            # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT    # optional, arbitrary value for documentation purposesD
+security:
+  - bearerAuth: []

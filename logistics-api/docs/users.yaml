@@ -1,0 +1,366 @@
+paths:
+  /users:
+    post:
+      tags:
+        - users
+      description: add new user
+      summary: add new user
+      security:
+      - bearerAuth: []
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: integer
+                user_name:
+                  type: string
+                email:
+                  type: string
+                  example: test@testmail.com
+                password:
+                  type: string
+                profile_pic:
+                  type: string
+                  format: binary
+      responses:
+        "201":
+          description: user created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
+                  message:
+                    type: string
+                    example: " User has been created"
+                  userId:
+                    type: integer
+    get:
+      tags:
+        - users
+      summary: get users
+      description: get users
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: limit
+          description: fetch limit
+          schema:
+            type: integer
+            example: 10
+        - in: query
+          name: offset
+          description: skip number
+          schema:
+            type: integer
+            example: 0
+        - in: query
+          name: orderby
+          description: order by userId, user_name, email
+          schema:
+            type: string
+            example: name
+        - in: query
+          name: dir
+          description: ASC, DESC
+          schema:
+            type: string
+            example: ASC
+        - in: query
+          name: status
+          description: get activated users when status is 1, if status is 0, then get inactivated users, if not set, then get all users
+          schema:
+            type: integer
+            example: 1
+      responses:
+        "200":
+          description: operation success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    userId:
+                      type: integer
+                    user_name:
+                      type: integer
+                    email:
+                      type: string
+                    password:
+                      type: string
+                    profile_pic:
+                      type: string
+  /users/{userId}:
+    get:
+      tags:
+        - users
+      summary: get user by Id
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+            example: 11
+      responses:
+        "200":
+          description: user
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    userId:
+                      type: integer
+                    user_name:
+                      type: integer
+                    email:
+                      type: string
+                    password:
+                      type: string
+                    profile_pic:
+                      type: string
+        "404":
+          description: item not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: The item does not exist
+    patch:
+      tags:
+        - users
+      summary: update user
+      description: update user
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+            example: 11
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                user_name:
+                  type: string
+                email:
+                  type: string
+                  example: test@testmail.com
+                password:
+                  type: string
+                profile_pic:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User has been updated
+        "404":
+          description: item not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: The item does not exist
+    delete:
+      tags:
+        - users
+      summary: delete user
+      description: delete user
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+            example: 11
+      responses:
+        "200":
+          description: deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User has been deleted
+        "404":
+          description: item not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: The item does not exist
+
+  /usersList:
+    post:
+      tags:
+        - users
+      summary: get the list of the users
+      security:
+        - bearerAuth: []
+      operationId: usersList
+      description: get the list of the users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RequestBodyOrderSchema"
+      responses:
+        "200":
+          description: user list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
+                  recordsTotal:
+                    type: integer
+                  recordsFiltered:
+                    type: integer
+                  draw:
+                    type: integer
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        userId:
+                          type: integer
+                        user_name:
+                          type: string
+                        email:
+                          type: string
+                        profile_pic:
+                          type: string
+  /getNewUserId:
+    get:
+      tags:
+        - users
+      summary: get new userId
+      security:
+      - bearerAuth: []
+      responses:
+        "200":
+          description: user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  newUserId:
+                    type: integer
+    
+components:
+  schemas:
+    RequestBodySchema:
+      type: object
+      properties:
+        start:
+          type: integer
+          description: start position of list
+          example: 1
+        length:
+            type: integer
+            description: number of the items to fetch per request
+            example: 10
+        draw:
+          type: integer
+          example: 1
+        search:
+          type: object
+          description: keyword for global search
+          properties:
+            value:
+              type: string
+              example: ""
+            regex:
+              type: string
+              example: false
+        order:
+          type: array
+          items:
+            type: object
+            properties:
+              column:
+                type: integer
+                example: 1
+              dir:
+                type: string
+                example: "asc"
+        columns:
+          type: array
+          description: set columns to fetch
+          items:
+            type: object
+            properties:
+              data:
+                type: integer
+              name:
+                description: set columns' name to fetch
+                type: string
+              searchable:
+                type: string
+                example: "true"
+              orderable:
+                type: string
+                example: "true"
+              search:
+                type: object
+                properties:
+                  value:
+                    type: string
+                    description: search keyword for a certain column
+                  regex:
+                    type: string
+                    example: "true"
+        global:
+          type: boolean
+          description: if global == true or not set, fetch all columns, if global == false, fetch columns set above
+          example: true
+        status:
+          type: integer
+          description: get inactivated orders when status=0,if status = 1,  get activated orders, if not set status, then get all orders

@@ -1,0 +1,49 @@
+paths:
+  /login:
+    post:
+      tags:
+        - users
+      summary: user login
+      operationId: userLogin
+      description: |
+        By passing user email and password, users attempt to login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: example@example.com
+                password:
+                    type: string
+                    example: strong password
+      responses:
+        '200':
+          description: the result of the login attempt
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: status of login.
+                    example: "ok"
+                  data:
+                    type: object
+                    properties:
+                      token:
+                        type: string
+                        example: "09234hdf[2309i20341923h4p3e"
+                      msg:
+                        type: string
+                        example: "invalid cridentail..."
+                        description: fail reason or success alert
+        '400':
+          description: Bad Request error

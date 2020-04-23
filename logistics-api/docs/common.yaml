@@ -1,0 +1,109 @@
+paths:
+  /getStateList:
+    get:
+      tags:
+        - common
+      summary: 
+      operationId: getStateList
+      responses:
+        '200':
+          description: 
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        stateId:
+                          type: integer
+                        name:
+                          type: string
+                        code:
+                          type: string
+                        status:
+                          type: integer
+  /getHistory:
+    post:
+      tags:
+        - common
+      operationId: getHistory
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                columns:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      search:
+                        type: object
+                        properties:
+                          value:
+                            type: string
+                draw:
+                  type: integer
+                length:
+                  type: integer
+                menuItem:
+                  type: string
+                menuId:
+                  type: integer
+                  description: clientId, contractorId or orderId, etc
+                search:
+                  type: object
+                  properties:
+                    value:
+                      type: string
+                start:
+                  type: integer
+      responses:
+        '200':
+          description: 
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        username:
+                          type: integer
+                        description:
+                          type: string
+                        historyno:
+                          type: string
+                        datetime:
+                          type: string
+                  draw:
+                    type: integer
+                  recordsFiltered:
+                    type: integer
+                  recordsTotal:
+                    type: integer
+              
+components:
+  securitySchemes:
+    bearerAuth:            # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT    # optional, arbitrary value for documentation purposesD

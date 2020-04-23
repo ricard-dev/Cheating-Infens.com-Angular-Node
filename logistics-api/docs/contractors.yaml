@@ -1,0 +1,748 @@
+paths:
+  /contractorsList:
+    post:
+      tags:
+        - contractors
+      summary: contractors list
+      operationId: contractorsList
+      description: get the list of the contractors
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RequestBodySchema"
+      responses:
+        "200":
+          description: fetching success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ContractorDetailSchema"
+                  draw:
+                    type: integer
+                  recordsFiltered:
+                    type: integer
+                  recordsTotal:
+                    type: integer
+  /getContractorDetails:
+    get:
+      tags:
+        - contractors
+      summary: contractor detail
+      operationId: getContractorDetails
+      description: get the detail for a contractor
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: contractorId
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: contractors detail
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      basicData:
+                        $ref: "#/components/schemas/ContractorDetailSchema"
+                      personIdsList:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/ContractorsContactPerson"
+                      tourList:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/ContractorsOrder"
+                      specialtourData:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/ContractorsSpecialOrder"
+  /getNewContractorNo:
+    get:
+      tags:
+        - contractors
+      summary: new number for a new contractor
+      operationId: getNewContractorNo
+      description: get new number for a new contractor
+      responses:
+        "200":
+          description: new contractor number
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  newcontractorId:
+                    type: integer
+  /contractorPersonList:
+    post:
+      tags:
+        - contractors
+      summary: get contractor's contact persons
+      description: contractors' contact persons
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RequestBodyContractorsPersonSchema"
+      responses:
+        "200":
+          description: contractor's contact persons' list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ContractorsPerson"
+  /deleteContractor:
+    delete:
+      tags:
+        - contractors
+      summary: delete a contractor has certain Id
+      description: delete contractor
+      parameters:
+        - in: query
+          name: contractorId
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: operation successed without errors
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  message:
+                    type: string
+                    example: contractor Has been deleted successfully.
+  /addeditContractor:
+    post:
+      tags:
+        - contractors
+      summary: add or update a contractor
+      description: add update a contractor
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                contractFiles:
+                  type: string
+                  format: binary
+                  description: contract file
+                basicData:
+                  type: string
+                  description: |
+                    stringified object
+                  example: '{"contractorId":23,"contractor_number":"23","alias":"XXX","name1":"Alexander","name2":"Alex","street":"south east","zipcode":"1992","city":"New York","state":"","country":"United State","phone1":"1578459978","phone2":"","mobile":"","alternative_invoice_recipient":"","fax":"","email":"test@test.com","rech_rhythm":"","zahl_rhythm":"","contract_file":"","contract_start_date":"","contract_end_date":"","termination_time":"","termination_time_value":"","billed":"","tax_identification_number":"","bank":"","iban":"","bic":"","national_tax_number":"455","ustr_mandatory":"","ustr_mandatory_value":"","currency":"USD", "vat_mandatory":"1", "vat_mandatory_value":"19", "contract_ok":"1","commercial_date":"2019-08-09","payment_block":"","payment_stop":"","mobiles":["+49234234","+492342342"],"creditor_no":21,"debitor_no":33, "location":{"lat":51.678,"lng":7.809,"marker":{"lat":51.678,"lng":7.809,"draggable":true},"zoom": 6,"address": "client address"}, "bank1Id":1, "bank2Id":2}'
+                comment:
+                  type: string
+                personList:
+                  type: string
+                  example: "[]"
+                deleteContractorOrders:
+                  type: string
+                  example: "[]"
+                  description: stringified array
+                deleteContractorPersons:
+                  type: string
+                  example: "[]"
+                  description: stringified array
+                orderDataList:
+                  type: string
+                  example: "[]"
+                  description: stringified array
+                priceHistory:
+                  type: string
+                  example: '[{"orderId":1,"priceType":"contractor_price", "price":34.22, "valid_from":"2019-12-01", "date_of_expiry": "2020-12-01"}]'
+
+      responses:
+        "200":
+          description: adding or updating a contractor was success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
+                  message:
+                    type: string
+                  newContractorId:
+                    type: integer
+                  fileName:
+                    type: string
+                  uploadedFile:
+                    type: string
+                    description: url of the file in aws s3 bucket
+                    example: https://logistic-uploads.s3.amazonaws.com/232.pdf
+  /contractorOrderList:
+    post:
+      tags:
+        - contractors
+      summary: get the list of a contractor's order
+      operationId: contractorOrderList
+      security:
+        - bearerAuth: []
+      description: contractors' orders
+      parameters:
+        - in: query
+          name: type
+          description: set order's type, (all, special, normal)
+          schema:
+            type: string
+            example: special
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                start:
+                  type: integer
+                  description: start position of the row of orders table to fetch
+                  example: 1
+                length:
+                  type: integer
+                  description: number of the clients' orders to fetch per request
+                  example: 10
+                draw:
+                  type: integer
+                  example: 1
+                search:
+                  type: object
+                  description: keyword for search
+                  properties:
+                    value:
+                      type: string
+                      example: ""
+                    regex:
+                      type: string
+                      example: false
+                    contractorId:
+                      type: integer
+                      example: 1
+                    deletedOrderIds:
+                      type: array
+                      items:
+                        type: integer
+                    newOrderIds:
+                      type: array
+                      items:
+                        type: integer
+                order:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      column:
+                        type: integer
+                        example: 1
+                      dir:
+                        type: string
+                        example: "asc"
+                columns:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      data:
+                        type: integer
+                      name:
+                        type: string
+                      searchable:
+                        type: string
+                        example: "true"
+                      orderable:
+                        type: string
+                        example: "true"
+                      search:
+                        type: object
+                        properties:
+                          value:
+                            type: string
+                          regex:
+                            type: string
+                            example: "true"
+                status:
+                  type: integer
+                  description: get inactivated orders when status=0,if status = 1,  get activated orders, if not set status, then get all orders
+                  example: 1
+      responses:
+        "200":
+          description: contractor's order list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
+                  recordsTotal:
+                    type: integer
+                  recordsFiltered:
+                    type: integer
+                  draw:
+                    type: integer
+                  data:
+                    type: array
+                    items:            
+                      type: object
+                      properties:
+                        orderId:
+                          type: integer
+                        order_number:
+                          type: integer
+                        description:
+                          type: string
+                        client_price:
+                          type: number
+                        client_price_week:
+                          type: number
+                        client_price_weekend:
+                          type: number
+                        contractor_price:
+                          type: number
+                        contractor_price_week:
+                          type: number
+                        contractor_price_weekend:
+                          type: number
+                        clientId:
+                          type: integer
+                        client_number:
+                          type: integer
+                        client_city:
+                          type: string
+                        contractorId:
+                          type: integer
+                        contractor_number:
+                          type: integer
+                        contreactor_name:
+                          type: string
+                        contractor_city:
+                          type: string
+                        clients_orderId:
+                          type: integer
+                        account_managers:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              name:
+                                type: string
+                              phone:
+                                type: string
+  /addOpenItem:
+    post:
+      tags:
+        - contractors
+      summary: add new open item
+      operationId: addOpenItem
+      description: open item
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                contractorId:
+                  type: integer
+                companyId:
+                  type: integer
+                description:
+                  type: string
+                amount:
+                  type: number
+                  format: float
+                price:
+                  type: number
+                  format: float
+                order_type:
+                  type: integer
+      responses:
+        "200":
+          description: client's order list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
+                  message:
+                    type: string
+                    example: 
+                  newOpenItemId:
+                    type: integer    
+
+components:
+  schemas:
+    RequestBodySchema:
+      type: object
+      properties:
+        start:
+          type: integer
+          description: start position of list
+          example: 1
+        length:
+          type: integer
+          description: number of the items to fetch per request
+          example: 10
+        draw:
+          type: integer
+          example: 1
+        search:
+          type: object
+          description: keyword for search
+          properties:
+            value:
+              type: string
+              example: ""
+            regex:
+              type: string
+              example: false
+        order:
+          type: array
+          items:
+            type: object
+            properties:
+              column:
+                type: integer
+                example: 1
+              dir:
+                type: string
+                example: "asc"
+        columns:
+          type: array
+          items:
+            type: object
+            properties:
+              data:
+                type: integer
+              name:
+                type: string
+              searchable:
+                type: string
+                example: "true"
+              orderable:
+                type: string
+                example: "true"
+              search:
+                type: object
+                properties:
+                  value:
+                    type: string
+                  regex:
+                    type: string
+                    example: "true"
+        status:
+          type: integer
+          description: get inactivated orders when status=0, if status = 1 get activated orders, if not set status, get all orders
+          example: 1
+    ContractorDetailSchema:
+      type: object
+      properties:
+        contractorId:
+          type: integer
+        contractor_number:
+          type: string
+        alias:
+          type: string
+        name1:
+          type: string
+        name2:
+          type: string
+        street:
+          type: string
+        zipcode:
+          type: string
+        city:
+          type: string
+        phone1:
+          type: string
+        phone2:
+          type: string
+        mobile:
+          type: string
+        fax:
+          type: string
+        email:
+          type: string
+        rech_rhythm:
+          type: string
+        zahl_rhythm:
+          type: string
+        contract_start_date:
+          type: string
+        contract_end_date:
+          type: string
+        termination_time:
+          type: string
+        termination_time_value:
+          type: string
+        iban:
+          type: string
+        bank:
+          type: string
+        bic:
+          type: string
+        national_tax_number:
+          type: string
+        state:
+          type: string
+        billed:
+          type: string
+        comment:
+          type: string
+        contract_file:
+          type: string
+        currency:
+          type: string
+        status:
+          type: integer
+        tax_identification_number:
+          type: string
+        ustr_mandatory:
+          type: string
+        ustr_mandatory_value:
+          type: string
+        vendor_number:
+          type: string
+        commercial_date:
+          type: string
+        contract_ok:
+          type: string
+        payment_block:
+          type: string
+        payment_stop:
+          type: integer
+        bankaccount_liquidator:
+          type: string
+        account_holder:
+          type: string
+        payment_stop_iban:
+          type: string
+        payment_stop_bic:
+          type: string
+        payment_stop_bank_name:
+          type: string
+        mobiles:
+          type: array
+          items:
+            type: integer
+        creditor_no:
+          type: integer
+        debitor_no:
+          type: integer
+        location: 
+          type: object
+          properties:
+            lat:
+              type: number
+              format: float
+            lng:
+              type: number
+              format: float
+            marker:
+              type: object
+              properties:
+                lat:
+                  type: number
+                  format: float
+                lng:
+                  type: number
+                  format: float
+                draggable:
+                  type: boolean
+            zoom:
+              type: number
+              format: float
+            address:
+              type: string
+        bank1Id:
+          type: integer
+        bank2Id:
+          type: integer
+        bank1_name:
+          type: string
+        bank2_name:
+          type: string
+        created_time:
+          type: string
+        updated_time:
+          type: string
+    ContractorsContactPerson:
+      type: object
+      properties:
+        contractors_contact_personId:
+          type: integer
+        contractorId:
+          type: integer
+        personId:
+          type: integer
+        added_date:
+          type: string
+        status:
+          type: integer
+    ContractorsOrder:
+      type: object
+      properties:
+        contractors_orderId:
+          type: integer
+        contractorId:
+          type: integer
+        orderId:
+          type: integer
+        added_date:
+          type: string
+        status:
+          type: integer
+    ContractorsSpecialOrder:
+      type: object
+      properties:
+        contractors_special_tourId:
+          type: integer
+        contractorId:
+          type: integer
+        description:
+          type: string
+        day:
+          type: string
+        client_price_week:
+          type: number
+          format: float
+        contractor_prcie_week:
+          type: number
+          format: float
+        contractors:
+          type: string
+    ContractorsPerson:
+      type: object
+      properties:
+        contractors_contact_personId:
+          type: integer
+        contractorId:
+          type: integer
+        added_date:
+          type: string
+        personId:
+          type: integer
+        person_number:
+          type: string
+        salutation:
+          type: string
+        first_name:
+          type: string
+        surname:
+          type: string
+        department:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+    RequestBodyContractorsPersonSchema:
+      type: object
+      properties:
+        start:
+          type: integer
+          description: start position in the list
+          example: 1
+        length:
+          type: integer
+          description: number of items
+          example: 10
+        draw:
+          type: integer
+          example: 1
+        search:
+          type: object
+          description: keyword for search
+          properties:
+            value:
+              type: string
+              example: ""
+            regex:
+              type: string
+              example: false
+            contractorId:
+              type: integer
+              example: 1
+            deletedPersonIds:
+              type: array
+              items:
+                type: integer
+            newPersonIds:
+              type: array
+              items:
+                type: integer
+        order:
+          type: array
+          items:
+            type: object
+            properties:
+              column:
+                type: integer
+                example: 1
+              dir:
+                type: string
+                example: "asc"
+        columns:
+          type: array
+          items:
+            type: object
+            properties:
+              data:
+                type: integer
+              name:
+                type: string
+              searchable:
+                type: string
+                example: "true"
+              orderable:
+                type: string
+                example: "true"
+              search:
+                type: object
+                properties:
+                  value:
+                    type: string
+                  regex:
+                    type: string
+                    example: "true"
+  securitySchemes:
+    bearerAuth: # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT # optional, arbitrary value for documentation purposesD

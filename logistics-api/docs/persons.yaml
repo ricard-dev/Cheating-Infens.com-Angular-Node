@@ -1,0 +1,273 @@
+paths:
+  /addeditPerson:
+    post:
+      tags:
+        - persons
+      summary: create or update new person
+      operationId: addeditPerson
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+              properties:
+                comment:
+                  type: string
+                  example: "comment for the person"
+                department:
+                    type: string 
+                email:
+                  type: string
+                  format: email
+                  example: mail@gmail.com
+                fax:
+                  type: string
+                first_name: 
+                  type: string
+                  example: felipe
+                surname:
+                  type: string
+                  example: ospena
+                personId:
+                  type: string
+                  description: if personId == "" addtion else edition
+                  example: ""
+                person_number:
+                  type: integer
+                  example: 3
+                phone:
+                  type: string
+                  example: 2342341
+                position:
+                  type: string
+                salutation:
+                  type: string
+                status:
+                  type: integer
+                type:
+                  type: string
+                  example: 0
+      responses:
+        '200':
+          description: result of the adding person or updating person
+          content:
+            application/json:
+              schema:
+                type: object                  
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
+                  newPersonId:
+                    type: integer
+                    example: 100
+                  message:
+                    type: string
+  /deletePerson:
+    delete:    
+      tags:
+        - persons
+      summary: delete a client and his basicData
+      operationId: deletePerson
+      parameters:
+        - in: query
+          name: personId
+          schema:
+            type: integer
+            example: 12
+      responses:
+        '200':
+          description: operation successed without errors
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  data:
+                    type: object
+                    properties:
+                      affectedRows:
+                        type: integer
+                        example: 0
+                      message:
+                        type: string
+                        example: operation successfully completed
+
+  /personOrderList:
+    post:
+      tags:
+        - persons
+      summary: get the list of the orders for a person
+      operationId: /personOrderList
+      description: get the list of the orders
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: type
+          description: order's type(special, normal, all)
+          schema:
+            type: string
+            example: normal
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - start
+                - length
+              properties:
+                start:
+                  type: integer
+                  description: start position of the row of the orders table to fetch
+                  example: 0
+                length:
+                    type: integer
+                    description: number of the orders to fetch per request
+                    example: 10
+                draw:
+                  type: integer
+                  example: 1
+                search:
+                  type: object
+                  description: keyword for search
+                  properties:
+                    value:
+                      type: string
+                      example: ""
+                    regex:
+                      type: string
+                      example: false
+                    personId:
+                      type: integer
+                      example: 1
+                    deletedOrderIds:
+                      type: array
+                      items:
+                        type: integer
+                    newOrderIds:
+                      type: array
+                      items:
+                        type: integer
+                order:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      column:
+                        type: integer
+                        example: 1
+                      dir:
+                        type: string
+                        example: "asc"
+                columns:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      data:
+                        type: integer
+                      name:
+                        type: string
+                      searchable:
+                        type: string
+                        example: "true"
+                      orderable:
+                        type: string
+                        example: "true"
+                      search:
+                        type: object
+                        properties:
+                          value:
+                            type: string
+                          regex:
+                            type: string
+                            example: "true"
+                status:
+                  type: integer
+                  description: get inactivated orders when status=0, if status = 1 get activated orders, if not set status, then get all orders
+                  example: 1
+      responses:
+        '200':
+          description: fetching success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        orderId:
+                          type: integer
+                        order_number:
+                          type: integer
+                        clientId:
+                          type: integer
+                        client_number:
+                          type: string
+                        client_name:
+                          type: string
+                        company_name:
+                          type: string
+                          description: client's company name
+                        contractorId:
+                          type: integer
+                        contractor_number:
+                          type: string
+                        contractor_name:
+                          type: string
+                        client_price:
+                          type: number
+                          format: float
+                          example: 23.34
+                        client_price_week:
+                          type: number
+                        client_price_weekend:
+                          type: number
+                        contractor_price:
+                          type: number
+                          format: float
+                        contractor_price_week:
+                          type: number
+                          format: float
+                          example: 23
+                        contractor_price_weekend:
+                          type: number
+                          format: float
+                        description:
+                          type: string
+                        client_city:
+                          type: string
+                        special_type:
+                          type: boolean
+                        status:
+                          type: boolean
+                        created_time:
+                          type: string
+                        updated_time:
+                          type: string
+                        manager:
+                          type: integer
+                        manager_name:
+                          type: string
+                        price_basis:
+                          type: string
+                        day:
+                          type: string
+                  draw:
+                    type: integer
+                  recordsFiltered:
+                    type: integer
+                  recordsTotal:
+                    type: integer

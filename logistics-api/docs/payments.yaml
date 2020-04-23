@@ -1,0 +1,101 @@
+paths:
+  /payments/contractors:
+    get:
+      tags:
+        - payments
+      summary: get all contractors
+      operationId: payments_contractors
+      parameters:
+        - in: query
+          name: search
+          schema:
+            type: string
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            description: fetch limit
+        - in: query
+          name: offset
+          schema:
+            type: integer
+            description: start position of the list
+        - in: query
+          name: orderby
+          schema:
+            type: string
+            description: set column to sort list
+            example: contractor_name
+        - in: query
+          name: dir
+          schema:
+            type: string
+            description: sort direction for orderby
+            example: ASC                  
+      responses:
+        '200':
+          description: get all contractors
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: true
+                  recordsTotal:
+                    type: integer
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        contractorId:
+                          type: integer
+                        contractor_number:
+                          type: integer
+                        name:
+                          type: string
+  /payments/{contractorId}/invoices:
+    get:
+      tags:
+        - payments
+      summary: get contractors' invoices
+      operationId: contractorInvoice
+      parameters:
+        - in: path
+          name: contractorId
+          description: contractor id
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: get contractors' invoices
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  recordsTotal:
+                    type: integer
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        invoiceId:
+                          type: integer
+                        invoice_number:
+                          type: integer
+                        invoiceDate:
+                          type: string
+                          format: date
+                        amount:
+                          type: number
+                          format: float
+                        status:
+                          type: integer
